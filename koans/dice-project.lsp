@@ -12,44 +12,39 @@
 ;;   See the License for the specific language governing permissions and
 ;;   limitations under the License.
 
-
 ; based on about_dice_project.rb
 
 ;; In this project we are going to build a CLOS class representing
 ;; a simple set of dice.  There are only two operations on the dice,
 ;; reading the values, and re-rolling.
 
-
 ;;  YOU WRITE THIS PART:
 (defclass dice-set ()
-  () ;; WRITE DICE-SET CLASS BODY HERE
-)
+  (dice))
 
 (defmethod get-values ((object dice-set))
-  ;; WRITE GET-VALUES METHOD DEFINITION HERE
-)
+  (slot-value object 'dice))
 
 (defmethod roll (how-many (object dice-set))
-  ;; WRITE ROLL METHOD DEFINITION HERE
-)
-
+  (setf (slot-value object 'dice)
+        (loop for i below how-many
+              collect (1+ (random 6)))))
 
 (define-test test-create-dice-set
-;; tests making an instance of the dice-set
-    (let ((dice (make-instance 'dice-set)))
-      (assert-true dice)))
-
+  ;; tests making an instance of the dice-set
+  (let ((dice (make-instance 'dice-set)))
+    (assert-true dice)))
 
 (define-test test-rolling-the-dice-returns-a-set-of-integers-between-1-and-6
-;; tests rolling the dice
-    (let ((dice (make-instance 'dice-set)))
-      (roll 5 dice)
-      (assert-true (typep (get-values dice) 'list))
-      (assert-equal 5 (length (get-values dice)))
-      (dolist (x (get-values dice))
-        (assert-true (and (>= x 1)
-                          (<= x 6)
-                          (typep x 'integer))))))
+  ;; tests rolling the dice
+  (let ((dice (make-instance 'dice-set)))
+    (roll 5 dice)
+    (assert-true (typep (get-values dice) 'list))
+    (assert-equal 5 (length (get-values dice)))
+    (dolist (x (get-values dice))
+      (assert-true (and (>= x 1)
+                        (<= x 6)
+                        (typep x 'integer))))))
 
 
 (define-test test-dice-values-do-not-change-unless-explicitly-rolled
@@ -59,7 +54,6 @@
       (let ((first-time (get-values dice))
             (second-time (get-values dice)))
         (assert-equal first-time second-time))))
-
 
 (define-test test-dice-values-should-change-between-rolls
 ;; tests that rolling the dice DOES change the values.

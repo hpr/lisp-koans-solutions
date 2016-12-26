@@ -12,11 +12,9 @@
 ;;   See the License for the specific language governing permissions and
 ;;   limitations under the License.
 
-
 ;;;;;;;;;;;;;;
 ;; GREED !! ;;
 ;;;;;;;;;;;;;;
-
 
 ;; Modified from Ruby Koans: about_scoring_project.rb
 
@@ -50,15 +48,27 @@
 ; Your goal is to write the score method.
 
 (defun score (dice)
-  ; You need to write this method
-)
+  (let ((sc 0))
+    (mapcar #'(lambda (n)
+                (if (>= (count n dice) 3)
+                    (progn
+                      (setf dice (delete n dice :count 3))
+                      (cond
+                       ((eq n 1) (setf sc (+ sc 1000)))
+                       (t (setf sc (+ sc (* 100 n))))))))
+            '(1 2 3 4 5 6))
+    (mapcar #'(lambda (n)
+                (cond
+                 ((eq 1 n) (setf sc (+ sc 100)))
+                 ((eq 5 n) (setf sc (+ sc 50)))))
+            dice)
+    sc))
 
 (define-test test-score-of-an-empty-list-is-zero
     (assert-equal 0 (score nil)))
 
 (define-test test-score-of-a-single-roll-of-5-is-50
     (assert-equal 50 (score '(5))))
-
 
 (define-test test-score-of-a-single-roll-of-1-is-100
     (assert-equal 100 (score '(1))))
@@ -69,17 +79,16 @@
 (define-test test-score-of-single-2s-3s-4s-and-6s-are-zero
     (assert-equal 0 (score '(2 3 4 6))))
 
-
 (define-test test-score-of-a-triple-1-is-1000
-    (assert-equal 1000  (score '(1 1 1))))
+    (assert-equal 1000 (score '(1 1 1))))
 
 (define-test test-score-of-other-triples-is-100x
-    (assert-equal 200  (score '(2 2 2)))
-    (assert-equal 300  (score '(3 3 3)))
-    (assert-equal 400  (score '(4 4 4)))
-    (assert-equal 500  (score '(5 5 5)))
-    (assert-equal 600  (score '(6 6 6))))
+    (assert-equal 200 (score '(2 2 2)))
+    (assert-equal 300 (score '(3 3 3)))
+    (assert-equal 400 (score '(4 4 4)))
+    (assert-equal 500 (score '(5 5 5)))
+    (assert-equal 600 (score '(6 6 6))))
 
 (define-test test-score-of-mixed-is-sum
-    (assert-equal 250  (score '(2 5 2 2 3)))
-    (assert-equal 550  (score '(5 5 5 5))))
+    (assert-equal 250 (score '(2 5 2 2 3)))
+    (assert-equal 550 (score '(5 5 5 5))))
